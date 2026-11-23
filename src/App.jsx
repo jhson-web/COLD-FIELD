@@ -2,10 +2,23 @@ import React, { useState } from 'react';
 import { X, Clock, MapPin, Package, Phone, AlertCircle, Info } from 'lucide-react';
 
 export default function App() {
+  // 'customer': 고객사용 입고 가이드 / 'field': 현장 입고 가이드
+  // 처음 접속했을 때 현장 가이드가 바로 보이게 하려면 아래 'customer'를 'field'로 바꾸세요.
+  const [guideType, setGuideType] = useState('customer');
   const [activeMenuId, setActiveMenuId] = useState(1);
   const [selectedRule, setSelectedRule] = useState(null);
 
-  const menuItems = [
+  // 가이드 전환 함수
+  const handleSwitchGuide = (type) => {
+    setGuideType(type);
+    setActiveMenuId(1);
+    setSelectedRule(null);
+  };
+
+  // ==========================================
+  // [고객사용] 메뉴 목록
+  // ==========================================
+  const customerMenuItems = [
     { id: 1, title: '입고전 확인 사항' },
     { id: 2, title: '포장 기준' },
     { id: 3, title: '바코드 기준' },
@@ -13,7 +26,17 @@ export default function App() {
   ];
 
   // ==========================================
-  // [데이터 1] 센터 정보 - 입고 전 확인 사항
+  // [현장용] 메뉴 목록 (원하는 메뉴명으로 수정하세요)
+  // ==========================================
+  const fieldMenuItems = [
+    { id: 1, title: '입차 및 온도 검수' },
+    { id: 2, title: '하차 및 외관 검수' },
+    { id: 3, title: '바코드 및 실셈 작업' },
+    { id: 4, title: '전산 반영 및 적치' },
+  ];
+
+  // ==========================================
+  // [고객사용 데이터 1] 센터 정보 - 입고 전 확인 사항
   // ==========================================
   const centerPreChecks = [
     {
@@ -51,7 +74,7 @@ export default function App() {
   ];
 
   // ==========================================
-  // [데이터 2] 포장 기준
+  // [고객사용 데이터 2] 포장 기준
   // ==========================================
   const packagingRules = [
     {
@@ -86,13 +109,13 @@ export default function App() {
     },
     {
       id: '7', title: 'P-BOX 입고시 벌크입고로 처리 됩니다.',
-     detailDesc: 'P-BOX의경우 입고는 가능하나, 입수량 및 박스 정보를 확인하기 힘들기 때문에 벌크 입고로 처리 됩니다..',
+      detailDesc: 'P-BOX의경우 입고는 가능하나, 입수량 및 박스 정보를 확인하기 힘들기 때문에 벌크 입고로 처리 됩니다..',
       image: '/COLD-FIELD/pack7.png'
     },
   ];
 
   // ==========================================
-  // [데이터 3] 바코드 기준
+  // [고객사용 데이터 3] 바코드 기준
   // ==========================================
   const barcodeRules = [
     {
@@ -132,7 +155,76 @@ export default function App() {
     }
   ];
 
-  // 리스트 렌더링 헬퍼 컴포넌트 (포장 기준, 바코드 기준 용)
+  // ==========================================
+  // [현장용 데이터 1] 입차 및 온도 검수 (내용 수정 가능)
+  // ==========================================
+  const fieldMenu1Rules = [
+    {
+      id: '1', title: '입고 예약 내역 및 입고증 대조 확인',
+      detailDesc: <>- 전산(바이스) 내 당일 입고 예약 건과 기사님이 제출한 입고증 내역을 대조합니다.<br/>- 미예약 차량 도착 시 담당 MD/운영팀 확인 후 회송 또는 대기 안내를 진행합니다.</>,
+      image: ''
+    },
+    {
+      id: '2', title: '차량 적재함 및 상품 심부/표면 온도 측정',
+      detailDesc: <>- 도어 개방 직후 차량 내부 온도계 및 적외선 온도계로 상품 온도를 측정합니다.<br/>- 적정 온도 이탈 시 사진 증빙을 남기고 즉시 운영팀에 보고 후 회송 처리합니다.</>,
+      image: ''
+    },
+    {
+      id: '3', title: '팔레트 이동전표 수취 확인 (KPP / AJ)',
+      detailDesc: <>- 하차 전 기사님으로부터 팔레트 이동전표를 반드시 수취합니다.<br/>- 이동전표 미지참 시 전표 발행 완료 전까지 하차를 보류합니다.</>,
+      image: ''
+    },
+  ];
+
+  // ==========================================
+  // [현장용 데이터 2] 하차 및 외관 검수 (내용 수정 가능)
+  // ==========================================
+  const fieldMenu2Rules = [
+    {
+      id: '1', title: '소비기한 및 제조 LOT 잔여일수 확인',
+      detailDesc: <>- 소비기한 기준 미달 상품(냉장 7일 이하, 냉동 10일 이하) 입고 여부를 확인합니다.<br/>- 동일 SKU 내 소비기한/LOT 혼재 시 현장에서 분리 적재 후 이슈를 공유합니다.</>,
+      image: ''
+    },
+    {
+      id: '2', title: '혼적 팔레트 1PLT-1SKU 분리 작업',
+      detailDesc: <>- 한 팔레트에 여러 SKU가 혼적된 경우 상품별로 팔레트를 분리하여 검수합니다.<br/>- 팔레트 높이 160cm 초과 또는 비표준 팔레트 입고 시 부가비용 청구를 위해 사진을 촬영합니다.</>,
+      image: ''
+    },
+  ];
+
+  // ==========================================
+  // [현장용 데이터 3] 바코드 및 실셈 작업 (내용 수정 가능)
+  // ==========================================
+  const fieldMenu3Rules = [
+    {
+      id: '1', title: '잔량 박스 및 벌크 입고 실셈 처리',
+      detailDesc: <>- 최상단 잔량 표기 박스 및 육안 수량 확인 불가(P-BOX 등) 물량은 개봉하여 전수 실셈을 진행합니다.<br/>- 실셈 및 부가작업 발생 내역은 현장 작업일지에 기록합니다.</>,
+      image: ''
+    },
+    {
+      id: '2', title: '바코드 스캔 테스트 및 덧방 작업',
+      detailDesc: <>- PDA 스캐너로 실제 바코드가 정상 스캔되는지 및 전산 등록 바코드와 일치하는지 확인합니다.<br/>- 다중 바코드 노출 또는 스캔 불가 시 기존 바코드 덧방 후 신규 라벨을 부착합니다.</>,
+      image: ''
+    },
+  ];
+
+  // ==========================================
+  // [현장용 데이터 4] 전산 반영 및 적치 (내용 수정 가능)
+  // ==========================================
+  const fieldMenu4Rules = [
+    {
+      id: '1', title: '검수 완료 수량 전산(바이스) 입고 확정',
+      detailDesc: <>- 실물 검수 수량과 전산 수량 일치 여부를 최종 확인 후 입고 확정 처리합니다.<br/>- 파손·과부족 발생 시 사진 증빙과 함께 특이사항을 등록합니다.</>,
+      image: ''
+    },
+    {
+      id: '2', title: '보관 온도대별 로케이션 적치 및 랩핑 확인',
+      detailDesc: <>- 냉장/냉동 지정 보관 존으로 이동 전 팔레트 랩핑 상태를 최종 점검합니다.<br/>- 동일 SKU라도 입고일이 다를 경우 기존 팔레트와 합적하지 않고 별도 적치합니다.</>,
+      image: ''
+    },
+  ];
+
+  // 리스트 렌더링 헬퍼 컴포넌트
   const RuleList = ({ rules, label }) => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {rules.map((rule) => (
@@ -163,97 +255,82 @@ export default function App() {
   };
 
   // ------------------------------------------
-  // 우측 메인 화면 렌더링 함수
+  // 우측 메인 화면 렌더링 함수 (고객사용)
   // ------------------------------------------
-  const renderMainContent = () => {
-    // [1] 센터 정보 화면
+  const renderCustomerContent = () => {
     if (activeMenuId === 1) {
       return (
         <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '40px 50px', minHeight: 'calc(100vh - 60px)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
           <h2 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '8px', color: '#0a44e6' }}></h2>
           <p style={{ color: '#6b7280', fontSize: '16px', marginBottom: '32px' }}>센터 기본 정보 및 입고 전 확인 사항입니다.</p>
 
-<p style={{ color: '#666', fontSize: '15px', marginBottom: '20px' }}>
-</p>
+          <div style={{ display: 'flex', gap: '24px', alignItems: 'stretch', marginBottom: '48px' }}>
+            <div style={{ flex: '6', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ backgroundColor: '#f8f9fa', borderRadius: '16px', padding: '24px' }}>
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '17px', fontWeight: 'bold', margin: '0 0 14px 0', color: '#111' }}>
+                  <Clock size={20} color="#0a44e6" /> 입고가능 시간 & 점심시간
+                </h3>
+                <p style={{ margin: '0 0 6px 0', fontSize: '15px', color: '#222' }}>
+                  <strong>입고가능:</strong> 10시 ~ 18시
+                </p>
+                <p style={{ margin: '0 0 16px 0', fontSize: '15px', fontWeight: 'bold', color: '#e11d48' }}>
+                  점심시간: 13시 ~ 14시 입고불가
+                </p>
+                <div style={{ backgroundColor: '#ffe4e6', borderRadius: '10px', padding: '14px 16px', fontSize: '13.5px', color: '#111', lineHeight: '1.6' }}>
+                  센터 점심시간 중에는 하차 및 모든 입고 업무가 중단 됩니다.<br />
+                  해당 시간 도착으로 인한 대기 발생시, 당사는 대기 비용에 대한 책임을 지지 않습니다.<br />
+                  원활한 입고 를 위해 반드시 점심시간을 제외하고 도착할수 있도록 배차 관리 부탁드립니다.
+                </div>
+              </div>
 
-{/* 좌측 정보(60%) + 우측 센터 사진(40%) 레이아웃 */}
-<div style={{ display: 'flex', gap: '24px', alignItems: 'stretch', marginBottom: '48px' }}>
-  
-  {/* [좌측 60%] 센터 정보 영역 */}
-  <div style={{ flex: '6', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-    
-    {/* 1. 입고가능 시간 & 점심시간 */}
-    <div style={{ backgroundColor: '#f8f9fa', borderRadius: '16px', padding: '24px' }}>
-      <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '17px', fontWeight: 'bold', margin: '0 0 14px 0', color: '#111' }}>
-        <Clock size={20} color="#0a44e6" /> 입고가능 시간 & 점심시간
-      </h3>
-      <p style={{ margin: '0 0 6px 0', fontSize: '15px', color: '#222' }}>
-        <strong>입고가능:</strong> 10시 ~ 18시
-      </p>
-      <p style={{ margin: '0 0 16px 0', fontSize: '15px', fontWeight: 'bold', color: '#e11d48' }}>
-        점심시간: 13시 ~ 14시 입고불가
-      </p>
-      <div style={{ backgroundColor: '#ffe4e6', borderRadius: '10px', padding: '14px 16px', fontSize: '13.5px', color: '##111', lineHeight: '1.6' }}>
-        센터 점심시간 중에는 하차 및 모든 입고 업무가 중단 됩니다.<br />
-        해당 시간 도착으로 인한 대기 발생시, 당사는 대기 비용에 대한 책임을 지지 않습니다.<br />
-        원활한 입고 를 위해 반드시 점심시간을 제외하고 도착할수 있도록 배차 관리 부탁드립니다.
-      </div>
-    </div>
+              <div style={{ backgroundColor: '#f8f9fa', borderRadius: '16px', padding: '24px' }}>
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '17px', fontWeight: 'bold', margin: '0 0 14px 0', color: '#111' }}>
+                  <MapPin size={20} color="#0a44e6" /> 센터 주소
+                </h3>
+                <p style={{ margin: '0 0 8px 0', fontSize: '15px', color: '#222' }}>
+                  <strong>도로명 :</strong> 경기도 용인시 처인구 양지면 중부대로 2465 케이로지스 B4
+                </p>
+                <p style={{ margin: 0, fontSize: '15px', color: '#222' }}>
+                  <strong>지번 :</strong> 경기도 용인시 처인구 양지읍 제일리 453-10
+                </p>
+              </div>
 
-    {/* 2. 센터 주소 */}
-    <div style={{ backgroundColor: '#f8f9fa', borderRadius: '16px', padding: '24px' }}>
-      <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '17px', fontWeight: 'bold', margin: '0 0 14px 0', color: '#111' }}>
-        <MapPin size={20} color="#0a44e6" /> 센터 주소
-      </h3>
-      <p style={{ margin: '0 0 8px 0', fontSize: '15px', color: '#222' }}>
-        <strong>도로명 :</strong> 경기도 용인시 처인구 양지면 중부대로 2465 케이로지스 B4
-      </p>
-      <p style={{ margin: 0, fontSize: '15px', color: '#222' }}>
-        <strong>지번 :</strong> 경기도 용인시 처인구 양지읍 제일리 453-10
-      </p>
-    </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div style={{ backgroundColor: '#f8f9fa', borderRadius: '16px', padding: '24px' }}>
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '17px', fontWeight: 'bold', margin: '0 0 14px 0', color: '#111' }}>
+                    <Package size={20} color="#0a44e6" /> 팔레트 코드
+                  </h3>
+                  <p style={{ margin: 0, fontSize: '15px', color: '#222' }}>AJ: / KPP:</p>
+                </div>
 
-    {/* 3. 팔레트 코드 & 담당자 정보 (2열 배치) */}
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-      <div style={{ backgroundColor: '#f8f9fa', borderRadius: '16px', padding: '24px' }}>
-        <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '17px', fontWeight: 'bold', margin: '0 0 14px 0', color: '#111' }}>
-          <Package size={20} color="#0a44e6" /> 팔레트 코드
-        </h3>
-        <p style={{ margin: 0, fontSize: '15px', color: '#222' }}>AJ: / KPP:</p>
-      </div>
+                <div style={{ backgroundColor: '#f8f9fa', borderRadius: '16px', padding: '24px' }}>
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '17px', fontWeight: 'bold', margin: '0 0 14px 0', color: '#111' }}>
+                    <Phone size={20} color="#0a44e6" /> 담당자 정보
+                  </h3>
+                  <p style={{ margin: '0 0 6px 0', fontSize: '15px', color: '#222' }}>담당자명:</p>
+                  <p style={{ margin: 0, fontSize: '15px', color: '#222' }}>연락처:</p>
+                </div>
+              </div>
+            </div>
 
-      <div style={{ backgroundColor: '#f8f9fa', borderRadius: '16px', padding: '24px' }}>
-        <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '17px', fontWeight: 'bold', margin: '0 0 14px 0', color: '#111' }}>
-          <Phone size={20} color="#0a44e6" /> 담당자 정보
-        </h3>
-        <p style={{ margin: '0 0 6px 0', fontSize: '15px', color: '#222' }}>담당자명:</p>
-        <p style={{ margin: 0, fontSize: '15px', color: '#222' }}>연락처:</p>
-      </div>
-    </div>
-
-  </div>
-
-  {/* [우측 40%] 센터 전경 사진 영역 */}
-  <div style={{ flex: '4', display: 'flex' }}>
-    <img
-      src="/COLD-FIELD/center.png" 
-      alt="센터 전경 사진" 
-      style={{ 
-        width: '100%', 
-        height: '100%', 
-        objectFit: 'cover', 
-        borderRadius: '16px', 
-        border: '1px solid #eaeaea',
-        display: 'block'
-      }} 
-    />
-  </div>
-
-</div>
+            <div style={{ flex: '4', display: 'flex' }}>
+              <img
+                src="/COLD-FIELD/center.png" 
+                alt="센터 전경 사진" 
+                style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  objectFit: 'cover', 
+                  borderRadius: '16px', 
+                  border: '1px solid #eaeaea',
+                  display: 'block'
+                }} 
+              />
+            </div>
+          </div>
 
           <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '20px', color: '#111', borderBottom: '2px solid #111', paddingBottom: '12px' }}>입고 전 확인 사항</h3>
           
-          {/* 👇 수정된 부분: 리스트(모달 연결) 대신 내용을 바로 박스 형태로 뿌려줍니다 */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {centerPreChecks.map((check) => (
               <div key={check.id} style={{ backgroundColor: '#f8f9fa', borderRadius: '12px', padding: '24px', border: '1px solid #eaeaea' }}>
@@ -271,13 +348,10 @@ export default function App() {
               </div>
             ))}
           </div>
-          {/* 👆 여기까지 수정됨 */}
-          
         </div>
       );
     }
 
-    // [2] 포장 기준 화면
     if (activeMenuId === 2) {
       return (
         <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '40px 50px', minHeight: 'calc(100vh - 60px)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
@@ -288,7 +362,6 @@ export default function App() {
       );
     }
 
-    // [3] 바코드 기준 화면
     if (activeMenuId === 3) {
       return (
         <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '40px 50px', minHeight: 'calc(100vh - 60px)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
@@ -299,7 +372,6 @@ export default function App() {
       );
     }
 
-    // [4] 입고 예약 화면
     if (activeMenuId === 4) {
       return (
         <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '40px 50px', minHeight: 'calc(100vh - 60px)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
@@ -350,35 +422,122 @@ export default function App() {
       );
     }
 
-    const currentMenu = menuItems.find(menu => menu.id === activeMenuId);
+    return null;
+  };
+
+  // ------------------------------------------
+  // 우측 메인 화면 렌더링 함수 (현장 입고 가이드용)
+  // ------------------------------------------
+  const renderFieldContent = () => {
+    const fieldMap = {
+      1: {
+        title: '입차 및 온도 검수 기준',
+        desc: '현장 차량 도착 시 예약 확인 및 적정 온도 체크 기준입니다.',
+        rules: fieldMenu1Rules,
+        label: '입차 및 온도 검수'
+      },
+      2: {
+        title: '하차 및 외관 검수 기준',
+        desc: '하차 시 소비기한 확인 및 혼적 팔레트 분리 작업 기준입니다.',
+        rules: fieldMenu2Rules,
+        label: '하차 및 외관 검수'
+      },
+      3: {
+        title: '바코드 및 실셈 작업 기준',
+        desc: '잔량 박스 실셈 및 바코드 스캔·덧방 처리 현장 기준입니다.',
+        rules: fieldMenu3Rules,
+        label: '바코드 및 실셈 작업'
+      },
+      4: {
+        title: '전산 반영 및 적치 기준',
+        desc: '검수 완료 후 바이스 입고 확정 및 보관 존 이동 기준입니다.',
+        rules: fieldMenu4Rules,
+        label: '전산 반영 및 적치'
+      },
+    };
+
+    const currentField = fieldMap[activeMenuId];
+
     return (
       <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '40px 50px', minHeight: 'calc(100vh - 60px)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-        <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '12px', color: '#111' }}>{currentMenu?.title}</h2>
-        <p style={{ color: '#6b7280', fontSize: '15px', marginBottom: '32px' }}>이 페이지의 상세 내용은 아직 준비 중입니다.</p>
+        <div style={{ display: 'inline-block', backgroundColor: '#ecfdf5', color: '#059669', padding: '6px 12px', borderRadius: '8px', fontSize: '13px', fontWeight: 'bold', marginBottom: '12px' }}>
+          현장 업무용 가이드
+        </div>
+        <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '12px', color: '#111' }}>{currentField.title}</h2>
+        <p style={{ color: '#6b7280', fontSize: '15px', marginBottom: '32px' }}>{currentField.desc}</p>
+        <RuleList rules={currentField.rules} label={currentField.label} />
       </div>
     );
   };
 
+  const currentMenuList = guideType === 'customer' ? customerMenuItems : fieldMenuItems;
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f4f6f9', fontFamily: '"Pretendard", sans-serif' }}>
       
+      {/* 좌측 사이드바 영역 */}
       <div style={{ width: '280px', padding: '30px 24px', flexShrink: 0 }}>
-        <h1 style={{ fontSize: '18px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '40px' }}>
+        <h1 style={{ fontSize: '18px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
           <span style={{ color: '#0046ff', fontSize: '16px' }}>poomgo.</span> 품고 저온입고 가이드
         </h1>
+
+        {/* 👇 [고객사용 입고 가이드] / [현장 입고 가이드] 전환 버튼 영역 */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', backgroundColor: '#e5e7eb', padding: '6px', borderRadius: '14px', marginBottom: '28px' }}>
+          <button
+            onClick={() => handleSwitchGuide('customer')}
+            style={{
+              width: '100%',
+              padding: '11px 14px',
+              borderRadius: '10px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              backgroundColor: guideType === 'customer' ? '#0a44e6' : 'transparent',
+              color: guideType === 'customer' ? 'white' : '#4b5563',
+              boxShadow: guideType === 'customer' ? '0 2px 6px rgba(10,68,230,0.25)' : 'none',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            고객사용 입고 가이드
+          </button>
+          <button
+            onClick={() => handleSwitchGuide('field')}
+            style={{
+              width: '100%',
+              padding: '11px 14px',
+              borderRadius: '10px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              backgroundColor: guideType === 'field' ? '#059669' : 'transparent',
+              color: guideType === 'field' ? 'white' : '#4b5563',
+              boxShadow: guideType === 'field' ? '0 2px 6px rgba(5,150,105,0.25)' : 'none',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            현장 입고 가이드
+          </button>
+        </div>
+
+        {/* 선택된 가이드에 따른 세부 메뉴 버튼 */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {menuItems.map((menu) => {
+          {currentMenuList.map((menu) => {
             const isActive = menu.id === activeMenuId;
+            const activeColor = guideType === 'customer' ? '#0a44e6' : '#059669';
+            const badgeBg = guideType === 'customer' ? '#eef2ff' : '#ecfdf5';
+
             return (
               <div 
                 key={menu.id} onClick={() => setActiveMenuId(menu.id)}
                 style={{ 
                   display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px', borderRadius: '12px', cursor: 'pointer',
-                  backgroundColor: isActive ? '#0a44e6' : 'white', color: isActive ? 'white' : '#333',
-                  boxShadow: isActive ? '0 4px 12px rgba(10,68,230,0.2)' : '0 1px 3px rgba(0,0,0,0.05)', fontWeight: isActive ? 'bold' : '500', transition: 'all 0.2s ease'
+                  backgroundColor: isActive ? activeColor : 'white', color: isActive ? 'white' : '#333',
+                  boxShadow: isActive ? '0 4px 12px rgba(0,0,0,0.12)' : '0 1px 3px rgba(0,0,0,0.05)', fontWeight: isActive ? 'bold' : '500', transition: 'all 0.2s ease'
                 }}
               >
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '13px', fontWeight: 'bold', backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : '#eef2ff', color: isActive ? 'white' : '#0a44e6' }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '13px', fontWeight: 'bold', backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : badgeBg, color: isActive ? 'white' : activeColor }}>
                   {menu.id}
                 </div>
                 {menu.title}
@@ -388,10 +547,12 @@ export default function App() {
         </div>
       </div>
 
+      {/* 우측 메인 콘텐츠 영역 */}
       <div style={{ flex: 1, padding: '30px 30px 30px 0' }}>
-        {renderMainContent()}
+        {guideType === 'customer' ? renderCustomerContent() : renderFieldContent()}
       </div>
 
+      {/* 상세보기 모달 팝업 */}
       {selectedRule && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.4)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <div style={{ backgroundColor: 'white', width: '90%', maxWidth: '800px', borderRadius: '16px', padding: '40px', position: 'relative', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', maxHeight: '90vh', overflowY: 'auto' }}>
@@ -414,7 +575,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* 👇 수정된 부분: 사진이 잘리지 않도록 높이를 자동(auto)으로 맞추고, contain 속성을 적용했습니다. */}
             {selectedRule.image !== undefined && (
               <div style={{ width: '100%', marginTop: '20px', textAlign: 'center' }}>
                 {selectedRule.image ? (
@@ -423,8 +583,8 @@ export default function App() {
                     alt="상세 설명 이미지" 
                     style={{ 
                       width: '100%', 
-                      height: 'auto',         // 비율 고정을 풀고 자동 높이로 변경
-                      objectFit: 'contain',   // 이미지가 잘리지 않고 영역 안에 쏙 들어가게 변경
+                      height: 'auto',
+                      objectFit: 'contain',
                       borderRadius: '12px', 
                       display: 'block', 
                       border: '1px solid #eaeaea' 
