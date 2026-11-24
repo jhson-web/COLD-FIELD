@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { X, Clock, MapPin, Package, Phone, AlertCircle, Info } from 'lucide-react';
+import { X, Clock, MapPin, Package, Phone, AlertCircle, Info, CheckCircle2 } from 'lucide-react';
 
 export default function App() {
   // 'customer': 고객사용 입고 가이드 / 'field': 현장 입고 가이드
-  // 처음 접속했을 때 현장 가이드가 바로 보이게 하려면 아래 'customer'를 'field'로 바꾸세요.
+  // 처음 접속했을 때 현장 가이드가 바로 열리게 하려면 아래 'customer'를 'field'로 변경하세요.
   const [guideType, setGuideType] = useState('customer');
   const [activeMenuId, setActiveMenuId] = useState(1);
   const [selectedRule, setSelectedRule] = useState(null);
 
-  // 가이드 전환 함수
   const handleSwitchGuide = (type) => {
     setGuideType(type);
     setActiveMenuId(1);
@@ -26,13 +25,15 @@ export default function App() {
   ];
 
   // ==========================================
-  // [현장용] 메뉴 목록 (원하는 메뉴명으로 수정하세요)
+  // [현장용] 메뉴 목록 (1~6번)
   // ==========================================
   const fieldMenuItems = [
-    { id: 1, title: '입차 및 온도 검수' },
-    { id: 2, title: '하차 및 외관 검수' },
-    { id: 3, title: '바코드 및 실셈 작업' },
-    { id: 4, title: '전산 반영 및 적치' },
+    { id: 1, title: '고객사용 가이드 숙지' },
+    { id: 2, title: '입고예약 하루 전 준비' },
+    { id: 3, title: '차량 하차 전 확인' },
+    { id: 4, title: '상품 검수 및 특이사항' },
+    { id: 5, title: '입고 완료 후 적치' },
+    { id: 6, title: '기본 단가표' },
   ];
 
   // ==========================================
@@ -156,75 +157,191 @@ export default function App() {
   ];
 
   // ==========================================
-  // [현장용 데이터 1] 입차 및 온도 검수 (내용 수정 가능)
+  // [현장용 데이터] 1~5번 항목
   // ==========================================
-  const fieldMenu1Rules = [
+  const fieldChecklists = {
+    1: {
+      title: '1. 고객사용 입고 가이드를 숙지해 주세요',
+      desc: '현장 입고 업무 진행 전 고객사 안내 기준을 먼저 확인합니다.',
+      items: [
+        '센터 정보, 파레트 코드, 담당자 연락처 등 기본 정보를 확인해 주세요.',
+        '입고 시 준수 사항을 미리 확인해 주세요.',
+        <>입고는 무조건 <b>바코드 기준</b>으로 처리합니다.</>,
+      ]
+    },
+    2: {
+      title: '2. 입고예약 하루 전 준비해 주세요',
+      desc: '익일 원활한 입고 작업을 위해 전일 퇴근 전 필수 점검 사항입니다.',
+      items: [
+        <>네이버 센터의 경우 <b>입고 18시까지</b>입니다. 18시까지 업무할 수 있도록 아르바이트 및 인원을 산정해 주세요.</>,
+        '익일 입고에 지장이 없도록 퇴근 전 장비 상태(PDA, 스캐너, 라벨 프린터 등)를 꼭 확인해 주세요.',
+        <><b>18시 이후 퇴근 전</b> [등록됨] 상태에 있는 익일 입고건은 <b>[확인됨]</b>으로 변경해 주세요.</>,
+      ]
+    },
+    3: {
+      title: '3. 차량 하차 전 꼭 확인해 주세요',
+      desc: '차량 도착 직후 하차 승인 전 반드시 확인해야 할 절차입니다.',
+      items: [
+        '하차 전 입고요청서가 작성되어 있는 건인지 먼저 확인해 주세요.',
+        <>차량 내부 온도와 상품 온도를 확인해 주세요. <b>10분 단위 타코미터 기록지</b>를 꼭 확인 후, <b>한 번이라도 온도 이탈 시 회송 처리</b>합니다.</>,
+        <>입고증과 파레트 전표가 수량에 맞는지 확인해 주세요. <span style={{ color: '#dc2626', fontWeight: 'bold' }}>(파레트 전표가 없으면 입고 불가합니다.)</span></>,
+        <>입고요청서 작성과 온도 유지가 확실하다면 하차 전 <b>PDA 바이스 입고앱으로 사진을 촬영</b>해 주세요. (차량번호와 상품이 식별 가능하도록 촬영)</>,
+        <>하차 진행 후 품고 입고앱에서 해당 입고요청서가 <b>[입고중]</b>으로 넘어갔는지 확인해 주세요.</>,
+      ]
+    },
+    5: {
+      title: '5. 입고 완료 되면 적치해 주세요',
+      desc: '검수 및 입고 처리가 끝난 상품의 로케이션 적치 및 전산 마감 기준입니다.',
+      items: [
+        <>적치 시 <b>냉동·냉장</b>인지 잘 확인 후 맞는 챔버에 적치해 주세요.</>,
+        '소량 입고건은 셀 보관렉에 적치해 주세요.',
+        '오적치 되지 않게 꼭 확인해 주세요.',
+        <>적치 후 <b>입고대기공간에 있는 상품 데이터 이동</b>을 꼭 해주세요.</>,
+      ]
+    }
+  };
+
+  // [현장용 데이터 4] 상품 검수 및 특이사항
+  const fieldInspectionItems = [
     {
-      id: '1', title: '입고 예약 내역 및 입고증 대조 확인',
-      detailDesc: <>- 전산(바이스) 내 당일 입고 예약 건과 기사님이 제출한 입고증 내역을 대조합니다.<br/>- 미예약 차량 도착 시 담당 MD/운영팀 확인 후 회송 또는 대기 안내를 진행합니다.</>,
-      image: ''
+      title: '입고상품 및 수량 누락',
+      desc: '도착한 실 상품과 수량에 맞게 입고 처리 후 고객사에 공유합니다. 고객사 피드백을 토대로 재확인을 진행합니다.'
     },
     {
-      id: '2', title: '차량 적재함 및 상품 심부/표면 온도 측정',
-      detailDesc: <>- 도어 개방 직후 차량 내부 온도계 및 적외선 온도계로 상품 온도를 측정합니다.<br/>- 적정 온도 이탈 시 사진 증빙을 남기고 즉시 운영팀에 보고 후 회송 처리합니다.</>,
-      image: ''
+      title: '유통기한 미준수',
+      desc: '유통기한 기준 냉장 7일, 냉동 10일 이내 상품은 입고 불가합니다. 입고 시 스탑존으로 선 이동 후 고객사와 소통하여 처리합니다. (폐기 및 반출)',
+      highlight: 'red'
     },
     {
-      id: '3', title: '팔레트 이동전표 수취 확인 (KPP / AJ)',
-      detailDesc: <>- 하차 전 기사님으로부터 팔레트 이동전표를 반드시 수취합니다.<br/>- 이동전표 미지참 시 전표 발행 완료 전까지 하차를 보류합니다.</>,
-      image: ''
+      title: '제품 파손(불량)',
+      desc: '입고 시 파손이나 오염된 상품들은 스탑존으로 선 이동 후 고객사에 공유하여 처리합니다. (폐기 및 반출)',
+      highlight: 'red'
+    },
+    {
+      title: '입고 상품 및 수량 초과',
+      desc: '입고요청서에 있는 상품과 수량으로만 입고 진행합니다. 과입고된 상품과 수량은 긴급입고건으로 처리하며, 과입고건은 고객사 측에 입고요청서 작성을 요청합니다.',
+      highlight: 'orange'
+    },
+    {
+      title: '실셈',
+      desc: '벌크 상품들은 실셈을 진행합니다. (P-BOX의 경우도 벌크로 간주합니다.)',
+      highlight: 'orange'
+    },
+    {
+      title: '바코드 미부착',
+      desc: '무조건 바코드 부착 작업 후에 입고 처리를 진행합니다.',
+      highlight: 'orange'
+    },
+    {
+      title: '긴급 입고',
+      desc: '입고요청서가 없는 입고건은 긴급으로 처리합니다.',
+      highlight: 'orange'
+    },
+    {
+      title: '바코드 갈이 및 가림작업',
+      desc: '전산과 맞지 않는 바코드로 입고 시 바코드 갈이(덧방) 후 입고 처리합니다. 겉박스에 낱개 바코드가 있는 경우 가림 작업 후 입고 처리합니다.',
+      highlight: 'orange'
+    },
+    {
+      title: '묶음 상품',
+      desc: '낱개 상품으로 출고되어야 하나, OPP봉투나 끈 등으로 묶음 처리되어 있는 경우 해체 후 입고 처리합니다.',
+      highlight: 'orange'
+    },
+    {
+      title: '혼적입고',
+      desc: '규정상 1파렛트에 1SKU 적치가 원칙입니다. 입고 시 파레트에 3SKU까지는 무상으로 이적 작업이 진행되나, 4SKU 이상부터는 추가되는 1SKU당 추가 비용이 발생합니다.',
+      highlight: 'orange'
+    },
+    {
+      title: '파렛트 높이 불량',
+      desc: '파렛트 높이 180cm 이상일 경우 초과분은 이적 작업을 진행합니다.',
+      highlight: 'orange'
+    },
+    {
+      title: '규격 외 파렛트',
+      desc: '1.1m × 1.1m / 1.1m × 1.2m 규격 파레트가 아닌 경우나 나무 파렛트로 입고 시 이적 작업을 진행합니다.',
+      highlight: 'orange'
     },
   ];
 
   // ==========================================
-  // [현장용 데이터 2] 하차 및 외관 검수 (내용 수정 가능)
+  // [현장용 데이터 6] 기본 단가표 데이터
   // ==========================================
-  const fieldMenu2Rules = [
+  const priceTableGroups = [
     {
-      id: '1', title: '소비기한 및 제조 LOT 잔여일수 확인',
-      detailDesc: <>- 소비기한 기준 미달 상품(냉장 7일 이하, 냉동 10일 이하) 입고 여부를 확인합니다.<br/>- 동일 SKU 내 소비기한/LOT 혼재 시 현장에서 분리 적재 후 이슈를 공유합니다.</>,
-      image: ''
+      category: '보관비',
+      rows: [
+        { name: '출고/보관 로케이션 (Cell)', detail: '규격 280x600x400(mm) 기준', price: '냉동 : 500원 / 냉장 : 650원', unit: '로케이션 / 일' },
+        { name: '출고/보관 로케이션 (PLT)', detail: '규격 1,100x1,100x1,500(mm) 기준', price: '냉동 : 1,600원 / 냉장 : 1,800원', unit: '로케이션 / 일' },
+      ]
     },
     {
-      id: '2', title: '혼적 팔레트 1PLT-1SKU 분리 작업',
-      detailDesc: <>- 한 팔레트에 여러 SKU가 혼적된 경우 상품별로 팔레트를 분리하여 검수합니다.<br/>- 팔레트 높이 160cm 초과 또는 비표준 팔레트 입고 시 부가비용 청구를 위해 사진을 촬영합니다.</>,
-      image: ''
+      category: '반품',
+      rows: [
+        { name: '반품 택배비', detail: '-', price: '계약단가 + 100원', unit: '반품 송장건' },
+      ]
+    },
+    {
+      category: '임가공',
+      rows: [
+        { name: '기타 부착물', detail: '라벨, 스티커 부착', price: '100원', unit: 'Unit' },
+        { name: '부착물 위치 지정', detail: '바코드 및 기타 부착물 특정 위치 지정 시', price: '100원', unit: 'Unit' },
+        { name: '기본 세트화 작업', detail: '기본 2개 Unit 세트화 작업', price: '500원', unit: '건 당' },
+        { name: '추가 세트화 작업', detail: '기본 세트화 임가공에서 Unit 추가 시', price: '100원', unit: 'Unit' },
+        { name: '바코드 부착(개당)', detail: '바코드 사이즈 가로 4cm 세로 2cm', price: '100원', unit: 'Unit' },
+        { name: '단품화', detail: '세트화 해체 작업', price: '100원', unit: 'Unit' },
+      ]
+    },
+    {
+      category: '폐기',
+      rows: [
+        { name: '폐기비', detail: '-', price: '2,000원', unit: 'Kg' },
+      ]
+    },
+    {
+      category: '반출',
+      rows: [
+        { name: '박스 피킹비', detail: '개봉되지 않은 박스 피킹 기준', price: '1,000원', unit: 'BOX' },
+        { name: '유닛 피킹비', nameRowSpan: 3, detail: '피킹 로케이션에 진열된 상품 피킹 기준', price: '350원', unit: 'Unit (사이즈 30cm 미만)' },
+        { skipName: true, detail: '박스 동봉 이후, 카톤박스 라벨링 작업', price: '450원', unit: 'Unit (사이즈 30~60cm)' },
+        { skipName: true, detail: '-', price: '550원', unit: 'Unit (사이즈 60cm 이상)' },
+        { name: 'PLT 피킹비', detail: '입고처리 된 PLT에서 별도의 작업 없이 반출 시 적용', price: '10,000원', unit: 'PLT' },
+        { name: '박싱작업', detail: '택배 반출 시 적용', price: '1,000원', unit: 'BOX' },
+        { name: '팔레타이징 작업', detail: '카톤박스 개별 적재 시 적용 (PLT 피킹비가 적용된 경우, 미과금)', price: '5,000원', unit: 'PLT' },
+        { name: '팔레트 번호 라벨 부착비', detail: 'PLT 번호를 각 PLT 별로 부착하는 경우', price: '1,000원', unit: 'PLT' },
+        { name: '패킹리스트 작성 및 동봉', detail: '패킹리스트를 작성하여 동봉하는 경우', price: '5,000원', unit: '건 당' },
+        { name: 'PLT 상차비', detail: '용차 배송 시 적용', price: '5,000원', unit: 'PLT' },
+        { name: '박스상차비', detail: '용차 배송 시 적용', price: '1,000원', unit: 'BOX' },
+      ]
+    },
+    {
+      category: '입고',
+      rows: [
+        { name: '실셈', detail: '전수 검사', price: '100원', unit: 'Unit' },
+        { name: '긴급 입고', detail: '입고요청서 없는 입고건 / 입고요청서는 있으나 과입고된 경우', price: '100원', unit: 'Unit' },
+        { name: '컨테이너 입고', detail: '40HQ 컨테이너는 40FT로 적용', price: '10,000원', unit: 'Ft' },
+        { name: '바코드 상이', detail: '등록된 상품 바코드와 입고 상품 바코드가 다름', price: '100원', unit: 'Unit' },
+        { name: '이중 바코드', detail: '한 개 상품에 2개 이상의 상품 바코드가 있는 경우', price: '100원', unit: 'Unit' },
+        { name: '중복 바코드', detail: '다른 상품의 동일한 바코드가 부착된 경우', price: '100원', unit: 'Unit' },
+        { name: '바코드 없음', detail: '-', price: '100원', unit: 'Unit' },
+        { name: '상품묶음 중복 바코드', detail: '입고단위 바코드와 낱개 단위의 바코드가 같은 경우', price: '100원', unit: 'Unit' },
+        { name: '바코드 상태불량', detail: '바코드가 명확하지 않아 스캔불가', price: '100원', unit: 'Unit' },
+        { name: '파렛트 높이 불량', detail: '높이 초과분 이적 작업', price: '2,000원', unit: 'BOX' },
+        { name: '규정 외 파렛트', nameRowSpan: 2, detail: '규정 파렛트 이적작업 실시', price: '20,000원', unit: 'PLT' },
+        { skipName: true, detail: '나무 파렛트 등 입고 시 파렛트 통으로 이적', price: '10,000원', unit: 'FT' },
+        { name: '제품파손', nameRowSpan: 2, detail: '파손 등 판매불가상품', price: '회송 (착불 또는 회송 차량비/택배비 청구)', unit: '-' },
+        { skipName: true, detail: '폐기 요청 시 폐기', price: '2,000원', unit: 'Kg' },
+        { name: '외관박스불량', nameRowSpan: 2, detail: '상품 외관박스에 택배송장 부착 혹은 파손', price: '회송 (착불 또는 회송 차량비/택배비 청구)', unit: '-' },
+        { skipName: true, detail: '폐기 요청 시 폐기', price: '2,000원', unit: 'Kg' },
+        { name: '상품오염', nameRowSpan: 2, detail: '보관불량, 개봉 등으로 오염발생 시', price: '회송 (착불 또는 회송 차량비/택배비 청구)', unit: '-' },
+        { skipName: true, detail: '폐기 요청 시 폐기', price: '2,000원', unit: 'Kg' },
+        { name: '판매불가상품', nameRowSpan: 2, detail: '반송(회송) 처리 시', price: '회송 (착불 또는 회송 차량비/택배비 청구)', unit: '-' },
+        { skipName: true, detail: '폐기 요청 시 폐기', price: '2,000원', unit: 'Kg' },
+      ]
     },
   ];
 
-  // ==========================================
-  // [현장용 데이터 3] 바코드 및 실셈 작업 (내용 수정 가능)
-  // ==========================================
-  const fieldMenu3Rules = [
-    {
-      id: '1', title: '잔량 박스 및 벌크 입고 실셈 처리',
-      detailDesc: <>- 최상단 잔량 표기 박스 및 육안 수량 확인 불가(P-BOX 등) 물량은 개봉하여 전수 실셈을 진행합니다.<br/>- 실셈 및 부가작업 발생 내역은 현장 작업일지에 기록합니다.</>,
-      image: ''
-    },
-    {
-      id: '2', title: '바코드 스캔 테스트 및 덧방 작업',
-      detailDesc: <>- PDA 스캐너로 실제 바코드가 정상 스캔되는지 및 전산 등록 바코드와 일치하는지 확인합니다.<br/>- 다중 바코드 노출 또는 스캔 불가 시 기존 바코드 덧방 후 신규 라벨을 부착합니다.</>,
-      image: ''
-    },
-  ];
-
-  // ==========================================
-  // [현장용 데이터 4] 전산 반영 및 적치 (내용 수정 가능)
-  // ==========================================
-  const fieldMenu4Rules = [
-    {
-      id: '1', title: '검수 완료 수량 전산(바이스) 입고 확정',
-      detailDesc: <>- 실물 검수 수량과 전산 수량 일치 여부를 최종 확인 후 입고 확정 처리합니다.<br/>- 파손·과부족 발생 시 사진 증빙과 함께 특이사항을 등록합니다.</>,
-      image: ''
-    },
-    {
-      id: '2', title: '보관 온도대별 로케이션 적치 및 랩핑 확인',
-      detailDesc: <>- 냉장/냉동 지정 보관 존으로 이동 전 팔레트 랩핑 상태를 최종 점검합니다.<br/>- 동일 SKU라도 입고일이 다를 경우 기존 팔레트와 합적하지 않고 별도 적치합니다.</>,
-      image: ''
-    },
-  ];
-
-  // 리스트 렌더링 헬퍼 컴포넌트
+  // 리스트 렌더링 헬퍼 컴포넌트 (고객사용 포장/바코드 기준)
   const RuleList = ({ rules, label }) => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {rules.map((rule) => (
@@ -429,45 +546,181 @@ export default function App() {
   // 우측 메인 화면 렌더링 함수 (현장 입고 가이드용)
   // ------------------------------------------
   const renderFieldContent = () => {
-    const fieldMap = {
-      1: {
-        title: '입차 및 온도 검수 기준',
-        desc: '현장 차량 도착 시 예약 확인 및 적정 온도 체크 기준입니다.',
-        rules: fieldMenu1Rules,
-        label: '입차 및 온도 검수'
-      },
-      2: {
-        title: '하차 및 외관 검수 기준',
-        desc: '하차 시 소비기한 확인 및 혼적 팔레트 분리 작업 기준입니다.',
-        rules: fieldMenu2Rules,
-        label: '하차 및 외관 검수'
-      },
-      3: {
-        title: '바코드 및 실셈 작업 기준',
-        desc: '잔량 박스 실셈 및 바코드 스캔·덧방 처리 현장 기준입니다.',
-        rules: fieldMenu3Rules,
-        label: '바코드 및 실셈 작업'
-      },
-      4: {
-        title: '전산 반영 및 적치 기준',
-        desc: '검수 완료 후 바이스 입고 확정 및 보관 존 이동 기준입니다.',
-        rules: fieldMenu4Rules,
-        label: '전산 반영 및 적치'
-      },
-    };
+    // [현장 1, 2, 3, 5] 체크리스트 화면
+    if ([1, 2, 3, 5].includes(activeMenuId)) {
+      const section = fieldChecklists[activeMenuId];
+      return (
+        <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '40px 50px', minHeight: 'calc(100vh - 60px)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+          <div style={{ display: 'inline-block', backgroundColor: '#ecfdf5', color: '#059669', padding: '6px 12px', borderRadius: '8px', fontSize: '13px', fontWeight: 'bold', marginBottom: '12px' }}>
+            저온 입고 가이드 (현장용)
+          </div>
+          <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '10px', color: '#111' }}>{section.title}</h2>
+          <p style={{ color: '#6b7280', fontSize: '15px', marginBottom: '32px' }}>{section.desc}</p>
 
-    const currentField = fieldMap[activeMenuId];
-
-    return (
-      <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '40px 50px', minHeight: 'calc(100vh - 60px)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-        <div style={{ display: 'inline-block', backgroundColor: '#ecfdf5', color: '#059669', padding: '6px 12px', borderRadius: '8px', fontSize: '13px', fontWeight: 'bold', marginBottom: '12px' }}>
-          현장 업무용 가이드
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {section.items.map((text, idx) => (
+              <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', padding: '22px 24px', backgroundColor: '#f8fafc', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#059669', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '14px', fontWeight: 'bold', flexShrink: 0, marginTop: '2px' }}>
+                  {idx + 1}
+                </div>
+                <div style={{ fontSize: '15.5px', color: '#1f2937', lineHeight: '1.65' }}>
+                  {text}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-        <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '12px', color: '#111' }}>{currentField.title}</h2>
-        <p style={{ color: '#6b7280', fontSize: '15px', marginBottom: '32px' }}>{currentField.desc}</p>
-        <RuleList rules={currentField.rules} label={currentField.label} />
-      </div>
-    );
+      );
+    }
+
+    // [현장 4] 상품 검수 및 특이사항
+    if (activeMenuId === 4) {
+      return (
+        <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '40px 50px', minHeight: 'calc(100vh - 60px)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+          <div style={{ display: 'inline-block', backgroundColor: '#ecfdf5', color: '#059669', padding: '6px 12px', borderRadius: '8px', fontSize: '13px', fontWeight: 'bold', marginBottom: '12px' }}>
+            저온 입고 가이드 (현장용)
+          </div>
+          <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '10px', color: '#111' }}>4. 상품 검수 및 특이사항을 확인해 주세요</h2>
+          <p style={{ color: '#6b7280', fontSize: '15px', marginBottom: '24px' }}>검수 중 특이사항 발생 시 아래 기준에 따라 처리하고 전산에 반영해 주세요.</p>
+
+          {/* 하단 중요 공지 배너 */}
+          <div style={{ backgroundColor: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '12px', padding: '16px 20px', marginBottom: '28px', display: 'flex', alignItems: 'center', gap: '12px', color: '#92400e', fontSize: '14.5px', fontWeight: 'bold' }}>
+            <AlertCircle size={20} color="#d97706" style={{ flexShrink: 0 }} />
+            <span>해당 특이사항의 경우 추가비용이 발생합니다. 바이스(전산)에 반드시 추가해야 하며, 네이버 측으로 공유해 주어야 합니다.</span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {fieldInspectionItems.map((item, idx) => {
+              const isRed = item.highlight === 'red';
+              const isOrange = item.highlight === 'orange';
+              return (
+                <div
+                  key={idx}
+                  style={{
+                    padding: '20px 24px',
+                    borderRadius: '14px',
+                    backgroundColor: isRed ? '#fef2f2' : '#ffffff',
+                    border: isRed ? '1px solid #fecaca' : '1px solid #e5e7eb',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.02)'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                    <span style={{ backgroundColor: isRed ? '#dc2626' : '#059669', color: 'white', padding: '3px 9px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold' }}>
+                      {idx + 1}
+                    </span>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold', color: isRed ? '#991b1b' : '#111' }}>
+                      {item.title}
+                    </span>
+                    {isRed && (
+                      <span style={{ backgroundColor: '#fee2e2', color: '#dc2626', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold' }}>
+                        입고불가 / 스탑존
+                      </span>
+                    )}
+                    {isOrange && (
+                      <span style={{ backgroundColor: '#fff7ed', color: '#ea580c', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold' }}>
+                        부가작업 / 비용청구
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ margin: 0, fontSize: '14.5px', color: isRed ? '#7f1d1d' : '#374151', lineHeight: '1.65', paddingLeft: '2px' }}>
+                    {item.desc}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // [현장 6] 기본 단가표 (표 형태)
+    if (activeMenuId === 6) {
+      return (
+        <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '40px 50px', minHeight: 'calc(100vh - 60px)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+          <div style={{ display: 'inline-block', backgroundColor: '#ecfdf5', color: '#059669', padding: '6px 12px', borderRadius: '8px', fontSize: '13px', fontWeight: 'bold', marginBottom: '12px' }}>
+            저온 입고 가이드 (현장용)
+          </div>
+          <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '10px', color: '#111' }}>6. 기본 단가표</h2>
+          <p style={{ color: '#6b7280', fontSize: '15px', marginBottom: '28px' }}>보관, 반품, 임가공, 폐기, 반출 및 입고 부가작업 비용 기준표입니다.</p>
+
+          <div style={{ overflowX: 'auto', borderRadius: '14px', border: '1px solid #d1d5db' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left', lineHeight: '1.5' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#059669', color: 'white' }}>
+                  <th style={{ padding: '14px 16px', fontWeight: 'bold', width: '90px', textAlign: 'center', borderRight: '1px solid rgba(255,255,255,0.2)' }}>항목</th>
+                  <th style={{ padding: '14px 16px', fontWeight: 'bold', width: '210px', borderRight: '1px solid rgba(255,255,255,0.2)' }}>내용</th>
+                  <th style={{ padding: '14px 16px', fontWeight: 'bold', borderRight: '1px solid rgba(255,255,255,0.2)' }}>상세</th>
+                  <th style={{ padding: '14px 16px', fontWeight: 'bold', width: '210px', textAlign: 'right', borderRight: '1px solid rgba(255,255,255,0.2)' }}>단가</th>
+                  <th style={{ padding: '14px 16px', fontWeight: 'bold', width: '170px', textAlign: 'center' }}>부과기준</th>
+                </tr>
+              </thead>
+              <tbody>
+                {priceTableGroups.map((group) =>
+                  group.rows.map((row, rIdx) => (
+                    <tr
+                      key={`${group.category}-${rIdx}`}
+                      style={{
+                        borderTop: rIdx === 0 ? '2px solid #9ca3af' : '1px solid #e5e7eb',
+                        backgroundColor: rIdx % 2 === 0 ? '#ffffff' : '#f9fafb'
+                      }}
+                    >
+                      {rIdx === 0 && (
+                        <td
+                          rowSpan={group.rows.length}
+                          style={{
+                            padding: '12px 10px',
+                            fontWeight: 'bold',
+                            textAlign: 'center',
+                            backgroundColor: '#ecfdf5',
+                            color: '#065f46',
+                            borderRight: '1px solid #d1d5db',
+                            verticalAlign: 'middle'
+                          }}
+                        >
+                          {group.category}
+                        </td>
+                      )}
+
+                      {!row.skipName && (
+                        <td
+                          rowSpan={row.nameRowSpan || 1}
+                          style={{
+                            padding: '12px 16px',
+                            fontWeight: '600',
+                            color: '#111827',
+                            backgroundColor: row.nameRowSpan ? '#f3f4f6' : 'inherit',
+                            borderRight: '1px solid #e5e7eb',
+                            verticalAlign: 'middle'
+                          }}
+                        >
+                          {row.name}
+                        </td>
+                      )}
+
+                      <td style={{ padding: '12px 16px', color: '#4b5563', borderRight: '1px solid #e5e7eb' }}>
+                        {row.detail}
+                      </td>
+                      <td style={{ padding: '12px 16px', fontWeight: 'bold', color: '#0a44e6', textAlign: 'right', borderRight: '1px solid #e5e7eb' }}>
+                        {row.price}
+                      </td>
+                      <td style={{ padding: '12px 16px', color: '#374151', textAlign: 'center' }}>
+                        {row.unit !== '-' ? (
+                          <span style={{ display: 'inline-block', backgroundColor: '#f3f4f6', padding: '3px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: '500' }}>
+                            {row.unit}
+                          </span>
+                        ) : '-'}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
   };
 
   const currentMenuList = guideType === 'customer' ? customerMenuItems : fieldMenuItems;
@@ -481,7 +734,7 @@ export default function App() {
           <span style={{ color: '#0046ff', fontSize: '16px' }}>poomgo.</span> 품고 저온입고 가이드
         </h1>
 
-        {/* 👇 [고객사용 입고 가이드] / [현장 입고 가이드] 전환 버튼 영역 */}
+        {/* [고객사용 입고 가이드] / [현장 입고 가이드] 전환 버튼 영역 */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', backgroundColor: '#e5e7eb', padding: '6px', borderRadius: '14px', marginBottom: '28px' }}>
           <button
             onClick={() => handleSwitchGuide('customer')}
@@ -552,7 +805,7 @@ export default function App() {
         {guideType === 'customer' ? renderCustomerContent() : renderFieldContent()}
       </div>
 
-      {/* 상세보기 모달 팝업 */}
+      {/* 상세보기 모달 팝업 (고객사용 포장/바코드 기준용) */}
       {selectedRule && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.4)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <div style={{ backgroundColor: 'white', width: '90%', maxWidth: '800px', borderRadius: '16px', padding: '40px', position: 'relative', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', maxHeight: '90vh', overflowY: 'auto' }}>
