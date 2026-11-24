@@ -630,7 +630,7 @@ export default function App() {
                           padding: '12px 16px',
                           fontWeight: '600',
                           color: '#111827',
-                          backgroundColor: row.nameRowSpan ? '#f8fafc' : '#ffffff',
+                          backgroundColor: '#ffffff',
                           borderRight: '1px solid #e5e7eb',
                           verticalAlign: 'middle'
                         }}
