@@ -547,7 +547,7 @@ export default function App() {
 
           <div style={{ backgroundColor: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '12px', padding: '16px 20px', marginBottom: '28px', display: 'flex', alignItems: 'center', gap: '12px', color: '#92400e', fontSize: '14.5px', fontWeight: 'bold' }}>
             <AlertCircle size={20} color="#d97706" style={{ flexShrink: 0 }} />
-            <span>해당 특이사항의 경우 추가비용이 발생합니다. 바이스(전산)에 반드시 추가해야 하며, 네이버 측으로 공유해 주어야 합니다.</span>
+            <span>해당 특이사항의 경우 추가비용이 발생합니다. 추가비용 발생건에 대해서는 사진으로 증빙해야하며 네어비에 공유 해야 합니다.</span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
