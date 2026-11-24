@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Clock, MapPin, Package, Phone, AlertCircle, Info, CheckCircle2 } from 'lucide-react';
+import { X, Clock, MapPin, Package, Phone, AlertCircle, Info } from 'lucide-react';
 
 export default function App() {
   // 'customer': 고객사용 입고 가이드 / 'field': 현장 입고 가이드
@@ -265,80 +265,42 @@ export default function App() {
   ];
 
   // ==========================================
-  // [현장용 데이터 6] 기본 단가표 데이터
+  // [현장용 데이터 6] 기본 단가표 데이터 (4열 구성)
   // ==========================================
-  const priceTableGroups = [
-    {
-      category: '보관비',
-      rows: [
-        { name: '출고/보관 로케이션 (Cell)', detail: '규격 280x600x400(mm) 기준', price: '냉동 : 500원 / 냉장 : 650원', unit: '로케이션 / 일' },
-        { name: '출고/보관 로케이션 (PLT)', detail: '규격 1,100x1,100x1,500(mm) 기준', price: '냉동 : 1,600원 / 냉장 : 1,800원', unit: '로케이션 / 일' },
-      ]
-    },
-    {
-      category: '반품',
-      rows: [
-        { name: '반품 택배비', detail: '-', price: '계약단가 + 100원', unit: '반품 송장건' },
-      ]
-    },
-    {
-      category: '임가공',
-      rows: [
-        { name: '기타 부착물', detail: '라벨, 스티커 부착', price: '100원', unit: 'Unit' },
-        { name: '부착물 위치 지정', detail: '바코드 및 기타 부착물 특정 위치 지정 시', price: '100원', unit: 'Unit' },
-        { name: '기본 세트화 작업', detail: '기본 2개 Unit 세트화 작업', price: '500원', unit: '건 당' },
-        { name: '추가 세트화 작업', detail: '기본 세트화 임가공에서 Unit 추가 시', price: '100원', unit: 'Unit' },
-        { name: '바코드 부착(개당)', detail: '바코드 사이즈 가로 4cm 세로 2cm', price: '100원', unit: 'Unit' },
-        { name: '단품화', detail: '세트화 해체 작업', price: '100원', unit: 'Unit' },
-      ]
-    },
-    {
-      category: '폐기',
-      rows: [
-        { name: '폐기비', detail: '-', price: '2,000원', unit: 'Kg' },
-      ]
-    },
-    {
-      category: '반출',
-      rows: [
-        { name: '박스 피킹비', detail: '개봉되지 않은 박스 피킹 기준', price: '1,000원', unit: 'BOX' },
-        { name: '유닛 피킹비', nameRowSpan: 3, detail: '피킹 로케이션에 진열된 상품 피킹 기준', price: '350원', unit: 'Unit (사이즈 30cm 미만)' },
-        { skipName: true, detail: '박스 동봉 이후, 카톤박스 라벨링 작업', price: '450원', unit: 'Unit (사이즈 30~60cm)' },
-        { skipName: true, detail: '-', price: '550원', unit: 'Unit (사이즈 60cm 이상)' },
-        { name: 'PLT 피킹비', detail: '입고처리 된 PLT에서 별도의 작업 없이 반출 시 적용', price: '10,000원', unit: 'PLT' },
-        { name: '박싱작업', detail: '택배 반출 시 적용', price: '1,000원', unit: 'BOX' },
-        { name: '팔레타이징 작업', detail: '카톤박스 개별 적재 시 적용 (PLT 피킹비가 적용된 경우, 미과금)', price: '5,000원', unit: 'PLT' },
-        { name: '팔레트 번호 라벨 부착비', detail: 'PLT 번호를 각 PLT 별로 부착하는 경우', price: '1,000원', unit: 'PLT' },
-        { name: '패킹리스트 작성 및 동봉', detail: '패킹리스트를 작성하여 동봉하는 경우', price: '5,000원', unit: '건 당' },
-        { name: 'PLT 상차비', detail: '용차 배송 시 적용', price: '5,000원', unit: 'PLT' },
-        { name: '박스상차비', detail: '용차 배송 시 적용', price: '1,000원', unit: 'BOX' },
-      ]
-    },
-    {
-      category: '입고',
-      rows: [
-        { name: '실셈', detail: '전수 검사', price: '100원', unit: 'Unit' },
-        { name: '긴급 입고', detail: '입고요청서 없는 입고건 / 입고요청서는 있으나 과입고된 경우', price: '100원', unit: 'Unit' },
-        { name: '컨테이너 입고', detail: '40HQ 컨테이너는 40FT로 적용', price: '10,000원', unit: 'Ft' },
-        { name: '바코드 상이', detail: '등록된 상품 바코드와 입고 상품 바코드가 다름', price: '100원', unit: 'Unit' },
-        { name: '이중 바코드', detail: '한 개 상품에 2개 이상의 상품 바코드가 있는 경우', price: '100원', unit: 'Unit' },
-        { name: '중복 바코드', detail: '다른 상품의 동일한 바코드가 부착된 경우', price: '100원', unit: 'Unit' },
-        { name: '바코드 없음', detail: '-', price: '100원', unit: 'Unit' },
-        { name: '상품묶음 중복 바코드', detail: '입고단위 바코드와 낱개 단위의 바코드가 같은 경우', price: '100원', unit: 'Unit' },
-        { name: '바코드 상태불량', detail: '바코드가 명확하지 않아 스캔불가', price: '100원', unit: 'Unit' },
-        { name: '파렛트 높이 불량', detail: '높이 초과분 이적 작업', price: '2,000원', unit: 'BOX' },
-        { name: '규정 외 파렛트', nameRowSpan: 2, detail: '규정 파렛트 이적작업 실시', price: '20,000원', unit: 'PLT' },
-        { skipName: true, detail: '나무 파렛트 등 입고 시 파렛트 통으로 이적', price: '10,000원', unit: 'FT' },
-        { name: '제품파손', nameRowSpan: 2, detail: '파손 등 판매불가상품', price: '회송 (착불 또는 회송 차량비/택배비 청구)', unit: '-' },
-        { skipName: true, detail: '폐기 요청 시 폐기', price: '2,000원', unit: 'Kg' },
-        { name: '외관박스불량', nameRowSpan: 2, detail: '상품 외관박스에 택배송장 부착 혹은 파손', price: '회송 (착불 또는 회송 차량비/택배비 청구)', unit: '-' },
-        { skipName: true, detail: '폐기 요청 시 폐기', price: '2,000원', unit: 'Kg' },
-        { name: '상품오염', nameRowSpan: 2, detail: '보관불량, 개봉 등으로 오염발생 시', price: '회송 (착불 또는 회송 차량비/택배비 청구)', unit: '-' },
-        { skipName: true, detail: '폐기 요청 시 폐기', price: '2,000원', unit: 'Kg' },
-        { name: '판매불가상품', nameRowSpan: 2, detail: '반송(회송) 처리 시', price: '회송 (착불 또는 회송 차량비/택배비 청구)', unit: '-' },
-        { skipName: true, detail: '폐기 요청 시 폐기', price: '2,000원', unit: 'Kg' },
-      ]
-    },
+  const priceTableRows = [
+    { name: '출고/보관 로케이션 (Cell)', detail: '규격 280x600x400(mm) 기준', price: '냉동 : 500원 / 냉장 : 650원', unit: '로케이션 / 일' },
+    { name: '출고/보관 로케이션 (PLT)', detail: '규격 1,100x1,100x1,500(mm) 기준', price: '냉동 : 1,600원 / 냉장 : 1,800원', unit: '로케이션 / 일' },
+    { name: '반품 택배비', detail: '-', price: '계약단가 + 100원', unit: '반품 송장건' },
+    { name: '기타 부착물', detail: '라벨, 스티커 부착', price: '100원', unit: 'Unit' },
+    { name: '부착물 위치 지정', detail: '바코드 및 기타 부착물 특정 위치 지정 시', price: '100원', unit: 'Unit' },
+    { name: '기본 세트화 작업', detail: '기본 2개 Unit 세트화 작업', price: '500원', unit: '건 당' },
+    { name: '추가 세트화 작업', detail: '기본 세트화 임가공에서 Unit 추가 시', price: '100원', unit: 'Unit' },
+    { name: '바코드 부착(개당)', detail: '바코드 사이즈 가로 4cm 세로 2cm', price: '100원', unit: 'Unit' },
+    { name: '단품화', detail: '세트화 해체 작업', price: '100원', unit: 'Unit' },
+    { name: '폐기비', detail: '-', price: '2,000원', unit: 'Kg' },
+    { name: '박스 피킹비', detail: '개봉되지 않은 박스 피킹 기준', price: '1,000원', unit: 'BOX' },
+    { name: '유닛 피킹비', nameRowSpan: 3, detail: '피킹 로케이션에 진열된 상품 피킹 기준', price: '350원', unit: 'Unit (사이즈 30cm 미만)' },
+    { skipName: true, detail: '박스 동봉 이후, 카톤박스 라벨링 작업', price: '450원', unit: 'Unit (사이즈 30~60cm)' },
+    { skipName: true, detail: '-', price: '550원', unit: 'Unit (사이즈 60cm 이상)' },
+    { name: 'PLT 피킹비', detail: '입고처리 된 PLT에서 별도의 작업 없이 반출 시 적용', price: '10,000원', unit: 'PLT' },
+    { name: '박싱작업', detail: '택배 반출 시 적용', price: '1,000원', unit: 'BOX' },
+    { name: '팔레타이징 작업', detail: '카톤박스 개별 적재 시 적용 (PLT 피킹비가 적용된 경우, 미과금)', price: '5,000원', unit: 'PLT' },
+    { name: '팔레트 번호 라벨 부착비', detail: 'PLT 번호를 각 PLT 별로 부착하는 경우', price: '1,000원', unit: 'PLT' },
+    { name: '패킹리스트 작성 및 동봉', detail: '패킹리스트를 작성하여 동봉하는 경우', price: '5,000원', unit: '건 당' },
+    { name: 'PLT 상차비', detail: '용차 배송 시 적용', price: '5,000원', unit: 'PLT' },
+    { name: '박스상차비', detail: '용차 배송 시 적용', price: '1,000원', unit: 'BOX' },
+    { name: '실셈', detail: '벌크형태 입고 및 P-BOX 입고 시', price: '100원', unit: 'Unit' },
+    { name: '긴급 입고', detail: '입고요청서 없는 입고건 / 입고요청서는 있으나 과입고된 경우', price: '100원', unit: 'Unit' },
+    { name: '컨테이너 입고', detail: '40HQ 컨테이너는 40FT로 적용', price: '10,000원', unit: 'Ft' },
+    { name: '바코드 상이', detail: '등록된 상품 바코드와 입고 상품 바코드가 달라 바코드를 부착할 경우(덧방)', price: '100원', unit: 'Unit' },
+    { name: '이중 바코드', detail: '한 개 상품에 2개 이상의 상품 바코드가 있는 경우 / 가림작업', price: '100원', unit: 'Unit' },
+    { name: '중복 바코드', detail: '다른 상품의 동일한 바코드가 부착된 경우 / 가림작업', price: '100원', unit: 'Unit' },
+    { name: '바코드 없음', detail: '입고 시 바코드 필수 / 바코드 부착 비용', price: '100원', unit: 'Unit' },
+    { name: '상품묶음 중복 바코드', detail: '입고단위 바코드와 낱개 단위의 바코드가 같은 경우', price: '100원', unit: 'Unit' },
+    { name: '바코드상태불량', detail: '바코드가 명확하지 않아 스캔불가', price: '100원', unit: 'Unit' },
+    { name: '파렛트 높이 불량', detail: '높이 초과분 이적 작업', price: '2,000원', unit: 'BOX' },
+    { name: '규정 외 파렛트', nameRowSpan: 2, detail: '규정 파렛트 이적작업 실시', price: '20,000원', unit: 'PLT' },
+    { skipName: true, detail: '나무 파렛트 등 입고 시 파렛트 통으로 이적', price: '10,000원', unit: 'FT' },
   ];
 
   // 리스트 렌더링 헬퍼 컴포넌트 (고객사용 포장/바코드 기준)
@@ -583,7 +545,6 @@ export default function App() {
           <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '10px', color: '#111' }}>4. 상품 검수 및 특이사항을 확인해 주세요</h2>
           <p style={{ color: '#6b7280', fontSize: '15px', marginBottom: '24px' }}>검수 중 특이사항 발생 시 아래 기준에 따라 처리하고 전산에 반영해 주세요.</p>
 
-          {/* 하단 중요 공지 배너 */}
           <div style={{ backgroundColor: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '12px', padding: '16px 20px', marginBottom: '28px', display: 'flex', alignItems: 'center', gap: '12px', color: '#92400e', fontSize: '14.5px', fontWeight: 'bold' }}>
             <AlertCircle size={20} color="#d97706" style={{ flexShrink: 0 }} />
             <span>해당 특이사항의 경우 추가비용이 발생합니다. 바이스(전산)에 반드시 추가해야 하며, 네이버 측으로 공유해 주어야 합니다.</span>
@@ -633,7 +594,7 @@ export default function App() {
       );
     }
 
-    // [현장 6] 기본 단가표 (표 형태)
+    // [현장 6] 기본 단가표 (4열 표 형태)
     if (activeMenuId === 6) {
       return (
         <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '40px 50px', minHeight: 'calc(100vh - 60px)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
@@ -647,72 +608,50 @@ export default function App() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left', lineHeight: '1.5' }}>
               <thead>
                 <tr style={{ backgroundColor: '#059669', color: 'white' }}>
-                  <th style={{ padding: '14px 16px', fontWeight: 'bold', width: '90px', textAlign: 'center', borderRight: '1px solid rgba(255,255,255,0.2)' }}>항목</th>
-                  <th style={{ padding: '14px 16px', fontWeight: 'bold', width: '210px', borderRight: '1px solid rgba(255,255,255,0.2)' }}>내용</th>
+                  <th style={{ padding: '14px 16px', fontWeight: 'bold', width: '220px', borderRight: '1px solid rgba(255,255,255,0.2)' }}>내용</th>
                   <th style={{ padding: '14px 16px', fontWeight: 'bold', borderRight: '1px solid rgba(255,255,255,0.2)' }}>상세</th>
                   <th style={{ padding: '14px 16px', fontWeight: 'bold', width: '210px', textAlign: 'right', borderRight: '1px solid rgba(255,255,255,0.2)' }}>단가</th>
-                  <th style={{ padding: '14px 16px', fontWeight: 'bold', width: '170px', textAlign: 'center' }}>부과기준</th>
+                  <th style={{ padding: '14px 16px', fontWeight: 'bold', width: '185px', textAlign: 'center' }}>부과기준</th>
                 </tr>
               </thead>
               <tbody>
-                {priceTableGroups.map((group) =>
-                  group.rows.map((row, rIdx) => (
-                    <tr
-                      key={`${group.category}-${rIdx}`}
-                      style={{
-                        borderTop: rIdx === 0 ? '2px solid #9ca3af' : '1px solid #e5e7eb',
-                        backgroundColor: rIdx % 2 === 0 ? '#ffffff' : '#f9fafb'
-                      }}
-                    >
-                      {rIdx === 0 && (
-                        <td
-                          rowSpan={group.rows.length}
-                          style={{
-                            padding: '12px 10px',
-                            fontWeight: 'bold',
-                            textAlign: 'center',
-                            backgroundColor: '#ecfdf5',
-                            color: '#065f46',
-                            borderRight: '1px solid #d1d5db',
-                            verticalAlign: 'middle'
-                          }}
-                        >
-                          {group.category}
-                        </td>
-                      )}
+                {priceTableRows.map((row, idx) => (
+                  <tr
+                    key={idx}
+                    style={{
+                      borderTop: idx === 0 ? 'none' : '1px solid #e5e7eb',
+                      backgroundColor: '#ffffff'
+                    }}
+                  >
+                    {!row.skipName && (
+                      <td
+                        rowSpan={row.nameRowSpan || 1}
+                        style={{
+                          padding: '12px 16px',
+                          fontWeight: '600',
+                          color: '#111827',
+                          backgroundColor: row.nameRowSpan ? '#f8fafc' : '#ffffff',
+                          borderRight: '1px solid #e5e7eb',
+                          verticalAlign: 'middle'
+                        }}
+                      >
+                        {row.name}
+                      </td>
+                    )}
 
-                      {!row.skipName && (
-                        <td
-                          rowSpan={row.nameRowSpan || 1}
-                          style={{
-                            padding: '12px 16px',
-                            fontWeight: '600',
-                            color: '#111827',
-                            backgroundColor: row.nameRowSpan ? '#f3f4f6' : 'inherit',
-                            borderRight: '1px solid #e5e7eb',
-                            verticalAlign: 'middle'
-                          }}
-                        >
-                          {row.name}
-                        </td>
-                      )}
-
-                      <td style={{ padding: '12px 16px', color: '#4b5563', borderRight: '1px solid #e5e7eb' }}>
-                        {row.detail}
-                      </td>
-                      <td style={{ padding: '12px 16px', fontWeight: 'bold', color: '#0a44e6', textAlign: 'right', borderRight: '1px solid #e5e7eb' }}>
-                        {row.price}
-                      </td>
-                      <td style={{ padding: '12px 16px', color: '#374151', textAlign: 'center' }}>
-                        {row.unit !== '-' ? (
-                          <span style={{ display: 'inline-block', backgroundColor: '#f3f4f6', padding: '3px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: '500' }}>
-                            {row.unit}
-                          </span>
-                        ) : '-'}
-                      </td>
-                    </tr>
-                  ))
-                )}
+                    <td style={{ padding: '12px 16px', color: '#4b5563', borderRight: '1px solid #e5e7eb' }}>
+                      {row.detail}
+                    </td>
+                    <td style={{ padding: '12px 16px', fontWeight: 'bold', color: '#0a44e6', textAlign: 'right', borderRight: '1px solid #e5e7eb' }}>
+                      {row.price}
+                    </td>
+                    <td style={{ padding: '12px 16px', color: '#374151', textAlign: 'center' }}>
+                      <span style={{ display: 'inline-block', backgroundColor: '#f3f4f6', padding: '3px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: '500' }}>
+                        {row.unit}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
